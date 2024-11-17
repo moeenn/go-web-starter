@@ -1,0 +1,13 @@
+package pages
+
+import (
+  "sandbox/views/layouts"
+)
+
+templ HomePage(name string) {
+  @layouts.BaseLayout("Home") {
+    <div class="container">
+      <h1>Hello, {name}!</h1>
+    </div>
+  }
+}
