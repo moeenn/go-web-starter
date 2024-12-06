@@ -1,2 +1,4 @@
 sandbox
 *_templ.{go,txt}
+public/css/output.css
+node_modules
