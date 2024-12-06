@@ -1,4 +1,5 @@
 sandbox
-*_templ.{go,txt}
+views/**/*_templ.go
+views/**/*_templ.txt
 public/css/output.css
 node_modules
