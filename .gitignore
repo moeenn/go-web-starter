@@ -1,5 +1,6 @@
-sandbox
+./app
 views/**/*_templ.go
 views/**/*_templ.txt
-public/css/output.css
+public/css/styles.css
 node_modules
+dist/
