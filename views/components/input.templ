@@ -1,0 +1,11 @@
+package components
+
+templ InputError(message string) {
+	<p class="text-xs text-red-700 pt-1">{ message }</p>
+}
+
+templ Label(htmlFor, text string) {
+	<label for={ htmlFor } class="text-xs text-gray-800 mb-1">
+		{ text }
+	</label>
+}

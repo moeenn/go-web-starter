@@ -1,6 +1,6 @@
 ./app
+dist
 views/**/*_templ.go
 views/**/*_templ.txt
 public/css/styles.css
 node_modules
-dist/

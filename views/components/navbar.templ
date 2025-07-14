@@ -1,0 +1,29 @@
+package components
+
+type NavbarProps struct {
+	IsLoggedIn bool
+}
+
+templ Navbar(props NavbarProps) {
+	<nav class="bg-white shadow-sm border-b border-zinc-300 py-4">
+		<div class="container mx-auto px-4 flex justify-between">
+			<a class="text-3xl mb-0" href="/">
+				Logo
+			</a>
+			<div class="flex">
+				if props.IsLoggedIn {
+					<button
+						class="my-auto hover:text-cyan-700 transition:colors cursor-pointer"
+						hx-get="/auth/logout"
+						hx-target="body"
+					>Logout</button>
+				} else {
+					<a
+						class="my-auto hover:text-cyan-700 transition:colors"
+						href="/auth/login"
+					>Login</a>
+				}
+			</div>
+		</div>
+	</nav>
+}

@@ -1,0 +1,58 @@
+package components
+
+type loginFormFields struct {
+	Email    string
+	Password string
+}
+
+type LoginFormProps struct {
+	Errors  *loginFormFields
+	Values  *loginFormFields
+	Message *string
+}
+
+templ LoginForm(props LoginFormProps) {
+	<form hx-post="/auth/login">
+		<h2 class="text-3xl mb-6">Login</h2>
+		if props.Message != nil {
+			@MessageBox(*props.Message)
+		}
+		<fieldset class="mb-6">
+			@Label("email", "Email")
+			<input
+				type="email"
+				name="email"
+				class="text-sm px-3 py-2 border border-zinc-300 rounded w-full outline-cyan-600"
+			/>
+			if props.Errors != nil && props.Errors.Email != "" {
+				@InputError(props.Errors.Email)
+			}
+		</fieldset>
+		<fieldset class="mb-6">
+			@Label("password", "Password")
+			<input
+				type="password"
+				name="password"
+				required
+				minlength="8"
+				class="text-sm px-3 py-2 border border-zinc-300 rounded w-full outline-cyan-600"
+			/>
+			if props.Errors != nil && props.Errors.Password != "" {
+				@InputError(props.Errors.Password)
+			}
+		</fieldset>
+		<fieldset class="mb-6">
+			<a
+				href="/auth/forgot-password"
+				class="text-cyan-600 text-sm"
+			>
+				Forgot password
+			</a>
+		</fieldset>
+		<input
+			type="submit"
+			value="Login"
+			class="w-full bg-cyan-600 hover:bg-cyan-700 transition-colors text-white text-sm px-3 py-2 rounded cursor-pointer"
+		/>
+	</form>
+}
