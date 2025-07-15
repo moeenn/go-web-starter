@@ -63,3 +63,47 @@ func (f ForgotPasswordForm) Validate() *components.ForgotPasswordFormFields {
 
 	return nil
 }
+
+type RegisterForm struct {
+	Email           string
+	Password        string
+	ConfirmPassword string
+}
+
+func RegisterFormFromContext(ctx echo.Context) RegisterForm {
+	email := ctx.FormValue("email")
+	password := ctx.FormValue("password")
+	confirmPassword := ctx.FormValue("confirmPassword")
+
+	return RegisterForm{
+		Email:           email,
+		Password:        password,
+		ConfirmPassword: confirmPassword,
+	}
+}
+
+func (f RegisterForm) Validate() *components.RegisterFormFields {
+	errs := &components.RegisterFormFields{}
+	isValid := true
+
+	if f.Email == "" || !strings.Contains(f.Email, "@") {
+		errs.Email = "Please provide a valid email address"
+		isValid = false
+	}
+
+	if f.Password == "" || len(f.Password) < 8 {
+		errs.Password = "Please provide a stonger password"
+		isValid = false
+	}
+
+	if f.ConfirmPassword == "" || f.ConfirmPassword != f.Password {
+		errs.ConfirmPassword = "Password confirmation failed"
+		isValid = false
+	}
+
+	if !isValid {
+		return errs
+	}
+
+	return nil
+}

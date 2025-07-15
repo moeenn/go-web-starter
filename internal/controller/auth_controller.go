@@ -23,12 +23,14 @@ func (c *AuthController) RegisterRoutes(e *echo.Echo) {
 	g := e.Group("/auth")
 	g.GET("/login", c.LoginPage)
 	g.POST("/login", c.ProcessLoginRequest)
+	g.GET("/register", c.RegisterPage)
+	g.POST("/register", c.ProcessRegisterRequest)
 	g.GET("/forgot-password", c.ForgotPasswordPage)
 	g.POST("/forgot-password", c.ProcessForgotPasswordRequest)
 }
 
 func (c AuthController) LoginPage(ctx echo.Context) error {
-	html := pages.LoginPage()
+	html := pages.LoginPage(&pages.LoginPageProps{})
 	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
 }
 
@@ -45,7 +47,28 @@ func (c AuthController) ProcessLoginRequest(ctx echo.Context) error {
 		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
 	}
 
-	ctx.Response().Header().Set("HX-Redirect", "/") // TODO: redirect to dashboard.
+	ctx.Response().Header().Set("HX-Redirect", "/dashboard")
+	return ctx.NoContent(http.StatusNoContent)
+}
+
+func (c AuthController) RegisterPage(ctx echo.Context) error {
+	html := pages.RegisterPage()
+	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+}
+
+func (c AuthController) ProcessRegisterRequest(ctx echo.Context) error {
+	form := RegisterFormFromContext(ctx)
+	if err := form.Validate(); err != nil {
+		html := components.RegisterForm(components.RegisterFormProps{
+			Errors: err,
+			Values: components.RegisterFormFields{
+				Email: form.Email,
+			},
+		})
+		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	}
+
+	ctx.Response().Header().Set("HX-Redirect", "/auth/login")
 	return ctx.NoContent(http.StatusNoContent)
 }
 

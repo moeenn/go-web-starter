@@ -1,0 +1,12 @@
+package pages
+
+import (
+	"sandbox/views"
+	"sandbox/views/components"
+)
+
+templ RegisterPage() {
+	@views.AuthLayout("Create account") {
+		@components.RegisterForm(components.RegisterFormProps{})
+	}
+}

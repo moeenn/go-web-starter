@@ -5,8 +5,14 @@ import (
 	"sandbox/views/components"
 )
 
-templ LoginPage() {
+type LoginPageProps struct {
+	Message *string
+}
+
+templ LoginPage(props *LoginPageProps) {
 	@views.AuthLayout("Login") {
-		@components.LoginForm(components.LoginFormProps{})
+		@components.LoginForm(components.LoginFormProps{
+			Message: props.Message,
+		})
 	}
 }

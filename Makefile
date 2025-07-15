@@ -28,8 +28,17 @@ views_build:
 
 
 build: css_build views_build
-	go build -o app ${ENTRYPOINT} && \
+	go build -o app ${ENTRYPOINT}
+
+
+pkg: build
 	rm -rf ./dist && \
 	mkdir -p ./dist && \
 	mv -v ./app ./dist && \
 	cp -r ./public ./dist
+
+
+.PHONY: clean
+clean:
+	rm -rvf ./app && \
+	rm -rvf ./dist
