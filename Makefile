@@ -41,4 +41,5 @@ pkg: build
 .PHONY: clean
 clean:
 	rm -rvf ./app && \
-	rm -rvf ./dist
+	rm -rvf ./dist && \
+	rm -vf ./views/**/*_templ.go
