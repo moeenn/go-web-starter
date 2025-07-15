@@ -22,6 +22,7 @@ type AuthController struct {
 
 func (c *AuthController) RegisterRoutes(e *echo.Echo) {
 	g := e.Group("/auth")
+
 	g.GET("/login", c.AuthMiddleware.NotLoggedIn(c.LoginPage))
 	g.POST("/login", c.AuthMiddleware.NotLoggedIn(c.ProcessLoginRequest))
 	g.GET("/register", c.AuthMiddleware.NotLoggedIn(c.RegisterPage))
@@ -29,6 +30,14 @@ func (c *AuthController) RegisterRoutes(e *echo.Echo) {
 	g.GET("/forgot-password", c.AuthMiddleware.NotLoggedIn(c.ForgotPasswordPage))
 	g.POST("/forgot-password", c.AuthMiddleware.NotLoggedIn(c.ProcessForgotPasswordRequest))
 	g.GET("/logout", c.AuthMiddleware.LoggedIn(c.ProcessLogoutRequest))
+
+	// g.GET("/login", c.LoginPage)
+	// g.POST("/login", c.ProcessLoginRequest)
+	// g.GET("/register", c.RegisterPage)
+	// g.POST("/register", c.ProcessRegisterRequest)
+	// g.GET("/forgot-password", c.ForgotPasswordPage)
+	// g.POST("/forgot-password", c.ProcessForgotPasswordRequest)
+	// g.GET("/logout", c.ProcessLogoutRequest)
 }
 
 func (c AuthController) LoginPage(ctx echo.Context) error {
@@ -69,7 +78,7 @@ func (c AuthController) ProcessLoginRequest(ctx echo.Context) error {
 		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
 	}
 
-	ctx.Response().Header().Set("HX-Redirect", "/dashboard")
+	ctx.Response().Header().Set("HX-Location", "/dashboard")
 	return ctx.String(http.StatusOK, "")
 }
 
@@ -97,7 +106,7 @@ func (c AuthController) ProcessRegisterRequest(ctx echo.Context) error {
 		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
 	}
 
-	ctx.Response().Header().Set("HX-Redirect", "/auth/login")
+	ctx.Response().Header().Set("HX-Location", "/auth/login")
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -124,6 +133,6 @@ func (c AuthController) ProcessForgotPasswordRequest(ctx echo.Context) error {
 
 func (c AuthController) ProcessLogoutRequest(ctx echo.Context) error {
 	c.AuthService.RemoveAuthCookies(ctx)
-	ctx.Response().Header().Set("HX-Redirect", "/")
+	ctx.Response().Header().Set("HX-Location", "/")
 	return ctx.NoContent(http.StatusNoContent)
 }

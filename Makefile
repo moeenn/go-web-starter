@@ -21,7 +21,10 @@ gen_css:
 
 .PHONY: server_dev
 server_dev:
-	templ generate --watch --proxy="http://localhost:${SERVER_PORT}" --open-browser=false --cmd="godotenv -f ${ENV_FILE} go run ${ENTRYPOINT}"
+	templ generate --watch \
+	--proxy="http://localhost:${SERVER_PORT}" \
+	--open-browser=false \
+	--cmd="godotenv -f ${ENV_FILE} go run ${ENTRYPOINT}"
 
 
 gen_views:
@@ -37,7 +40,7 @@ build: gen_css gen_views gen_models
 	go build -o app ${ENTRYPOINT}
 
 
-pkg: lint build
+pkg: build
 	rm -rf ./dist && \
 	mkdir -p ./dist && \
 	mv -v ./app ./dist && \

@@ -61,9 +61,11 @@ func (s AuthService) SetAuthCookies(c echo.Context, result *LoginResult) error {
 	expiry := time.Now().Add(s.Config.Auth.JwtExpiryMinutes)
 
 	tokenCookie := &http.Cookie{
-		Name:    s.TokenCookieName,
-		Value:   result.Token,
-		Expires: expiry,
+		Name:     s.TokenCookieName,
+		Value:    result.Token,
+		Expires:  expiry,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
 	}
 	c.SetCookie(tokenCookie)
 
@@ -87,7 +89,13 @@ func (s AuthService) SetAuthCookies(c echo.Context, result *LoginResult) error {
 
 func (s AuthService) RemoveAuthCookies(c echo.Context) {
 	expiry := time.Unix(0, 0)
-	c.SetCookie(&http.Cookie{Name: s.TokenCookieName, Expires: expiry})
+	c.SetCookie(&http.Cookie{
+		Name:     s.TokenCookieName,
+		Expires:  expiry,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
 	// c.SetCookie(&http.Cookie{Name: authUserCookieName, Expires: expiry}) // TODO: enable.
 }
 
