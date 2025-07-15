@@ -1,13 +1,13 @@
 package components
 
-type loginFormFields struct {
+type LoginFormFields struct {
 	Email    string
 	Password string
 }
 
 type LoginFormProps struct {
-	Errors  *loginFormFields
-	Values  *loginFormFields
+	Errors  *LoginFormFields
+	Values  LoginFormFields
 	Message *string
 }
 
@@ -20,9 +20,11 @@ templ LoginForm(props LoginFormProps) {
 		<fieldset class="mb-6">
 			@Label("email", "Email")
 			<input
-				type="email"
 				name="email"
+				type="email"
+				required
 				class="text-sm px-3 py-2 border border-zinc-300 rounded w-full outline-cyan-600"
+				value={ props.Values.Email }
 			/>
 			if props.Errors != nil && props.Errors.Email != "" {
 				@InputError(props.Errors.Email)
