@@ -1,8 +1,8 @@
 package pages
 
 import (
-	"sandbox/views"
 	"sandbox/views/components"
+	"sandbox/views/layouts"
 )
 
 type LoginPageProps struct {
@@ -10,7 +10,7 @@ type LoginPageProps struct {
 }
 
 templ LoginPage(props *LoginPageProps) {
-	@views.AuthLayout("Login") {
+	@layouts.AuthLayout("Login") {
 		@components.LoginForm(components.LoginFormProps{
 			Message: props.Message,
 		})

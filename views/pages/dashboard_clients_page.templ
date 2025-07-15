@@ -1,0 +1,13 @@
+package pages
+
+import "sandbox/views/layouts"
+
+type DashboardClientsPageProps struct {
+	CurrentUrl string
+}
+
+templ DashboardClientsPage(props DashboardClientsPageProps) {
+	@layouts.DashboardLayout("Clients", props.CurrentUrl) {
+		<h1>Content of the dashboard clients page</h1>
+	}
+}

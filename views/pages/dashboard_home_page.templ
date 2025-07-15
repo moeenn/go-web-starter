@@ -1,0 +1,13 @@
+package pages
+
+import "sandbox/views/layouts"
+
+type DashboardHomePageProps struct {
+	CurrentUrl string
+}
+
+templ DashboardHomePage(props DashboardHomePageProps) {
+	@layouts.DashboardLayout("Home", props.CurrentUrl) {
+		<h1>Content of the dashboard home page</h1>
+	}
+}

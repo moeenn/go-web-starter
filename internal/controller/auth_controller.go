@@ -27,6 +27,7 @@ func (c *AuthController) RegisterRoutes(e *echo.Echo) {
 	g.POST("/register", c.ProcessRegisterRequest)
 	g.GET("/forgot-password", c.ForgotPasswordPage)
 	g.POST("/forgot-password", c.ProcessForgotPasswordRequest)
+	g.GET("/logout", c.ProcessLogoutRequest)
 }
 
 func (c AuthController) LoginPage(ctx echo.Context) error {
@@ -91,4 +92,9 @@ func (c AuthController) ProcessForgotPasswordRequest(ctx echo.Context) error {
 		Message: &message,
 	})
 	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+}
+
+func (c AuthController) ProcessLogoutRequest(ctx echo.Context) error {
+	// TODO: implement.
+	return nil
 }

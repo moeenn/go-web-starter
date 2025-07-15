@@ -1,12 +1,12 @@
 package pages
 
 import (
-	"sandbox/views"
 	"sandbox/views/components"
+	"sandbox/views/layouts"
 )
 
 templ RegisterPage() {
-	@views.AuthLayout("Create account") {
+	@layouts.AuthLayout("Create account") {
 		@components.RegisterForm(components.RegisterFormProps{})
 	}
 }

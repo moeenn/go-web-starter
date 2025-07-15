@@ -13,7 +13,7 @@ templ Navbar(props NavbarProps) {
 			<div class="flex">
 				if props.IsLoggedIn {
 					<button
-						class="my-auto hover:text-cyan-700 transition:colors cursor-pointer"
+						class="my-auto hover:text-cyan-700 transition-colors cursor-pointer"
 						hx-get="/auth/logout"
 						hx-target="body"
 					>Logout</button>

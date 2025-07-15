@@ -19,6 +19,7 @@ func run(logger *slog.Logger) error {
 	e.Static("/public", "public")
 	controller.NewPublicController(logger).RegisterRoutes(e)
 	controller.NewAuthController(logger).RegisterRoutes(e)
+	controller.NewDashboardController(logger).RegisterRoutes(e)
 
 	// start the web server.
 	address := serverConfig.Address()

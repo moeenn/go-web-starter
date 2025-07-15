@@ -1,0 +1,73 @@
+package layouts
+
+import ()
+
+templ BaseLayout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="stylesheet" href="/public/css/styles.css"/>
+			<script src="/public/js/htmx.min.js"></script>
+			<script type="module" src="/public/js/spa-nav.js"></script>
+			<title>{ title }</title>
+		</head>
+		<body class="bg-slate-50 text-gray-900">
+			{ children... }
+		</body>
+	</html>
+}
+
+templ AuthLayout(title string) {
+	@BaseLayout(title) {
+		<div class="h-screen overflow-y-auto flex">
+			<div class="container mx-auto m-auto w-96">
+				<div class="bg-white rounded border-zinc-300 p-6 shadow-lg border">
+					{ children... }
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ SidebarEntry(name, link, currentLink string) {
+	<a
+		href={ link }
+		class={
+			templ.KV("text-slate-600 border-slate-50", link != currentLink),
+			templ.KV("text-cyan-700 font-bold bg-slate-200 border-cyan-600", link == currentLink),
+			"block px-3 py-2 hover:bg-slate-200 transition-colors text-sm rounded-r border-l-2 mb-1",
+		}
+	>{ name }</a>
+}
+
+templ DashboardLayout(title string, currentUrl string) {
+	@BaseLayout("Dashboard - " + title) {
+		<div class="h-screen w-screen overflow-hidden grid grid-cols-5 px-4">
+			<div class="bg-slate-50 py-4 flex flex-col">
+				<div class="p-4">
+					<a class="text-3xl mb-0" href="/dashboard">
+						Logo
+					</a>
+				</div>
+				<div class="flex flex-col pb-4 flex-1">
+					@SidebarEntry("Users", "/dashboard/users", currentUrl)
+					@SidebarEntry("Clients", "/dashboard/clients", currentUrl)
+				</div>
+				<div>
+					<button
+						class="hover:text-cyan-700 transition-colors cursor-pointer hover:font-bold bg-slate-200 rounded w-full px-3 py-2 text-sm"
+						hx-get="/auth/logout"
+						hx-target="body"
+					>Logout</button>
+				</div>
+			</div>
+			<div class="col-span-4 overflow-y-auto py-4 pl-4">
+				<div class="bg-white rounded drop-shadow-md h-full border border-slate-100 p-4">
+					{ children... }
+				</div>
+			</div>
+		</div>
+	}
+}
