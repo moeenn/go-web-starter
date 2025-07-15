@@ -1,4 +1,4 @@
-package controller
+package form
 
 import (
 	"sandbox/views/components"

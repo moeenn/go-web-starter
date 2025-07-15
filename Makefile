@@ -1,5 +1,6 @@
 include .env
 
+ENV_FILE = .env
 ENTRYPOINT = ./cmd/app/main.go
 CSS_INPUT = ./resources/css/styles.css
 CSS_OUTPUT = ./public/css/styles.css
@@ -14,24 +15,29 @@ css_dev:
 	tailwindcss -i ${CSS_INPUT} -o ${CSS_OUTPUT} --watch
 
 
-css_build:
+gen_css:
 	tailwindcss -i ${CSS_INPUT} -o ${CSS_OUTPUT} --minify
 
 
 .PHONY: server_dev
 server_dev:
-	templ generate --watch --proxy="http://localhost:${SERVER_PORT}" --open-browser=false --cmd="go run ${ENTRYPOINT}"
+	templ generate --watch --proxy="http://localhost:${SERVER_PORT}" --open-browser=false --cmd="godotenv -f ${ENV_FILE} go run ${ENTRYPOINT}"
 
 
-views_build:
+gen_views:
 	templ generate
 
 
-build: css_build views_build
+.PHONY: lint
+lint:
+	golangci-lint run ./...
+
+
+build: gen_css gen_views gen_models
 	go build -o app ${ENTRYPOINT}
 
 
-pkg: build
+pkg: lint build
 	rm -rf ./dist && \
 	mkdir -p ./dist && \
 	mv -v ./app ./dist && \
@@ -43,3 +49,26 @@ clean:
 	rm -rvf ./app && \
 	rm -rvf ./dist && \
 	rm -vf ./views/**/*_templ.go
+
+
+.PHONY: gen_token
+gen_token:
+	go run github.com/moeenn/go-token@latest
+
+
+gen_models:
+	sqlc generate
+
+
+migration_new:
+	goose -s create ${NAME} sql
+
+
+.PHONY: db_migrate
+db_migrate:
+	goose up
+
+
+.PHONY: db_rollback
+db_rollback:
+	goose down-to 0

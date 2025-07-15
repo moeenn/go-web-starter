@@ -2,65 +2,116 @@ package config
 
 import (
 	"fmt"
-	"os"
 	"sandbox/internal/lib"
-	"strconv"
+	"time"
 )
-
-func readString(key string, fallback *string) (string, error) {
-	value, ok := os.LookupEnv(key)
-	if !ok {
-		if fallback == nil {
-			return "", fmt.Errorf("environment variable not found: %q", key)
-		}
-		return *fallback, nil
-	}
-
-	return value, nil
-}
-
-func readInt(key string, fallback *int) (int, error) {
-	value, ok := os.LookupEnv(key)
-	if !ok {
-		if fallback == nil {
-			return 0, fmt.Errorf("environment variable not found: %q", key)
-		}
-		return *fallback, nil
-	}
-
-	parsedValue, err := strconv.Atoi(value)
-	if err != nil {
-		return 0, fmt.Errorf("environment variable %q value is not a valid int", key)
-	}
-
-	return parsedValue, nil
-}
 
 const (
-	defaultServerHost string = "0.0.0.0"
-	defaultServerPort string = "3000"
+	defaultServerHost       string = "0.0.0.0"
+	defaultServerPort       string = "3000"
+	defaultJwtExpiryMinutes int    = 60 * 24 // 24 hours.
+	defaultTokenCookieName  string = "auth.token"
 )
 
-type ServerConfig struct {
+type serverConfig struct {
 	Host string
 	Port string
 }
 
-func NewServerConfig() (*ServerConfig, error) {
+func newServerConfig() (*serverConfig, error) {
 	host, err := readString("SERVER_HOST", lib.Ref(defaultServerHost))
 	if err != nil {
-		return nil, fmt.Errorf("server config error: %w", err)
+		return nil, err
 	}
 
 	port, err := readString("SERVER_PORT", lib.Ref(defaultServerPort))
 	if err != nil {
-		return nil, fmt.Errorf("server config error: %w", err)
+		return nil, err
 	}
 
-	config := &ServerConfig{host, port}
+	config := &serverConfig{host, port}
 	return config, nil
 }
 
-func (c ServerConfig) Address() string {
+func (c serverConfig) Address() string {
 	return c.Host + ":" + c.Port
+}
+
+type databaseConfig struct {
+	Uri string
+}
+
+func newDatabaseConfig() (*databaseConfig, error) {
+	uri, err := readString("GOOSE_DBSTRING", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	config := &databaseConfig{
+		Uri: uri,
+	}
+
+	return config, nil
+}
+
+type authConfig struct {
+	JwtSecret        []byte
+	JwtExpiryMinutes time.Duration
+	TokenCookieName  string
+}
+
+func newAuthConfig() (*authConfig, error) {
+	secret, err := readString("JWT_SECRET", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	expiryMinutes, err := readInt("JWT_EXPIRY_MINUTES", lib.Ref(defaultJwtExpiryMinutes))
+	if err != nil {
+		return nil, err
+	}
+
+	tokenCookieName, err := readString("AUTH_TOKEN_COOKIE_NAME", lib.Ref(defaultTokenCookieName))
+	if err != nil {
+		return nil, err
+	}
+
+	config := &authConfig{
+		JwtSecret:        []byte(secret),
+		JwtExpiryMinutes: time.Minute * time.Duration(expiryMinutes),
+		TokenCookieName:  tokenCookieName,
+	}
+
+	return config, nil
+}
+
+type Config struct {
+	Server   *serverConfig
+	Database *databaseConfig
+	Auth     *authConfig
+}
+
+func NewConfig() (*Config, error) {
+	server, err := newServerConfig()
+	if err != nil {
+		return nil, fmt.Errorf("server config: %w", err)
+	}
+
+	db, err := newDatabaseConfig()
+	if err != nil {
+		return nil, fmt.Errorf("database config: %w", err)
+	}
+
+	auth, err := newAuthConfig()
+	if err != nil {
+		return nil, fmt.Errorf("auth config: %w", err)
+	}
+
+	config := &Config{
+		Server:   server,
+		Database: db,
+		Auth:     auth,
+	}
+
+	return config, nil
 }
