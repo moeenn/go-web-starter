@@ -3,14 +3,16 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo/v4"
 )
 
+type ContextKey string
+
 const (
-	jwtClaimsContextKey string = "jwtClaims"
+	jwtClaimsContextKey ContextKey = "jwtClaims"
 )
 
 type JwtClaims struct {
@@ -74,8 +76,8 @@ func validateAndParseJwtClaims(jwtSecret []byte, bearerToken string) (*JwtClaims
 	return parsedClaims, nil
 }
 
-func GetJwtClaims(c echo.Context) *JwtClaims {
-	claims := c.Get(jwtClaimsContextKey)
+func GetJwtClaims(r *http.Request) *JwtClaims {
+	claims := r.Context().Value(jwtClaimsContextKey)
 	claimsCast, ok := claims.(*JwtClaims)
 	if !ok {
 		return nil

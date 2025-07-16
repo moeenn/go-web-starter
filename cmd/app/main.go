@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log/slog"
+	"net/http"
 	"os"
 	dbmodels "sandbox/db/models"
 	"sandbox/internal/config"
@@ -11,8 +12,6 @@ import (
 	"sandbox/internal/service"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func run(ctx context.Context, logger *slog.Logger) error {
@@ -43,24 +42,35 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		globalConfig.Auth.JwtSecret,
 	)
 
-	e := echo.New()
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.Static("/public", "public")
+	mux := http.NewServeMux()
+	fs := http.FileServer(http.Dir("./public"))
+	mux.Handle("/public/", http.StripPrefix("/public", fs))
 
 	// register all controllers.
-	controller.NewPublicController(logger).RegisterRoutes(e)
+	controller.NewPublicController(logger).RegisterRoutes(mux)
 	authController := &controller.AuthController{
 		Logger:         logger,
 		AuthService:    authService,
 		AuthMiddleware: authMiddleware,
 	}
-	authController.RegisterRoutes(e)
-	controller.NewDashboardController(logger).RegisterRoutes(e)
+	authController.RegisterRoutes(mux)
+	controller.NewDashboardController(logger).RegisterRoutes(mux)
 
 	// start the web server.
 	address := globalConfig.Server.Address()
 	logger.Info("starting server", "address", address)
-	return e.Start(address)
+
+	//nolint: exhaustruct
+	server := &http.Server{
+		Addr:              address,
+		Handler:           mux,
+		ReadTimeout:       globalConfig.Server.Timeout,
+		WriteTimeout:      globalConfig.Server.Timeout,
+		IdleTimeout:       globalConfig.Server.Timeout,
+		ReadHeaderTimeout: globalConfig.Server.Timeout,
+	}
+
+	return server.ListenAndServe()
 }
 
 func main() {

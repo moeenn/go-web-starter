@@ -1,10 +1,9 @@
 package form
 
 import (
+	"net/http"
 	"sandbox/views/components"
 	"strings"
-
-	"github.com/labstack/echo/v4"
 )
 
 type LoginForm struct {
@@ -12,9 +11,9 @@ type LoginForm struct {
 	Password string
 }
 
-func LoginFormFromContext(ctx echo.Context) LoginForm {
-	email := ctx.FormValue("email")
-	password := ctx.FormValue("password")
+func LoginFormFromRequest(r *http.Request) LoginForm {
+	email := r.FormValue("email")
+	password := r.FormValue("password")
 
 	return LoginForm{
 		Email:    email,
@@ -47,8 +46,8 @@ type ForgotPasswordForm struct {
 	Email string
 }
 
-func ForgotPasswordFormFromContext(ctx echo.Context) ForgotPasswordForm {
-	email := ctx.FormValue("email")
+func ForgotPasswordFormFromRequest(r *http.Request) ForgotPasswordForm {
+	email := r.FormValue("email")
 	return ForgotPasswordForm{
 		Email: email,
 	}
@@ -70,10 +69,10 @@ type RegisterForm struct {
 	ConfirmPassword string
 }
 
-func RegisterFormFromContext(ctx echo.Context) RegisterForm {
-	email := ctx.FormValue("email")
-	password := ctx.FormValue("password")
-	confirmPassword := ctx.FormValue("confirmPassword")
+func RegisterFormFromRequest(r *http.Request) RegisterForm {
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	confirmPassword := r.FormValue("confirmPassword")
 
 	return RegisterForm{
 		Email:           email,

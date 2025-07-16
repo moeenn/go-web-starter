@@ -2,10 +2,9 @@ package controller
 
 import (
 	"log/slog"
+	"net/http"
 	"sandbox/internal/lib"
 	"sandbox/views/pages"
-
-	"github.com/labstack/echo/v4"
 )
 
 type PublicController struct {
@@ -18,15 +17,15 @@ func NewPublicController(logger *slog.Logger) *PublicController {
 	}
 }
 
-func (c *PublicController) RegisterRoutes(e *echo.Echo) {
-	e.GET("/", c.HomePage)
+func (c *PublicController) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/", c.HomePage)
 }
 
-func (c PublicController) HomePage(ctx echo.Context) error {
+func (c PublicController) HomePage(w http.ResponseWriter, r *http.Request) {
 	html := pages.HomePage(pages.HomePageProps{
 		IsLoggedIn:     false,
 		FlashedMessage: lib.Ref("Welcome to our simple home-page"),
 	})
 
-	return render(ctx, html)
+	html.Render(r.Context(), w)
 }

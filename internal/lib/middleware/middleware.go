@@ -2,9 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"sandbox/internal/lib/htmx"
-
-	"github.com/labstack/echo/v4"
 )
 
 type AuthMiddleware struct {
@@ -19,50 +16,47 @@ func NewAuthMiddleware(cookieName string, jwtSecret []byte) *AuthMiddleware {
 	}
 }
 
-func (m AuthMiddleware) LoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
+func (m AuthMiddleware) LoggedIn(next http.HandlerFunc) http.HandlerFunc {
+	f := func(w http.ResponseWriter, r *http.Request) {
 		redirectUrl := "/"
-		_, err := c.Cookie(m.TokenCookieName)
+		_, err := r.Cookie(m.TokenCookieName)
 		if err != nil {
-			if htmx.IsHTMXRequest(c) {
-				return htmx.Redirect(c, redirectUrl)
+			if IsHTMXRequest(r) {
+				r.Header.Set("HX-Redirect", redirectUrl)
+				w.WriteHeader(http.StatusNoContent)
+				return
 			}
-			return c.Redirect(http.StatusTemporaryRedirect, redirectUrl)
+
+			http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect)
+			return
 		}
 
-		return next(c)
+		next(w, r)
 	}
+
+	return http.HandlerFunc(f)
 }
 
-func (m AuthMiddleware) NotLoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
+func (m AuthMiddleware) NotLoggedIn(next http.HandlerFunc) http.HandlerFunc {
+	f := func(w http.ResponseWriter, r *http.Request) {
 		redirectUrl := "/dashboard"
-		if _, err := c.Cookie(m.TokenCookieName); err == nil {
-			if htmx.IsHTMXRequest(c) {
-				c.Response().Header().Set("HX-Location", redirectUrl)
-				return c.NoContent(http.StatusNoContent)
+		if _, err := r.Cookie(m.TokenCookieName); err == nil {
+			if IsHTMXRequest(r) {
+				w.Header().Set("HX-Redirect", redirectUrl)
+				w.WriteHeader(http.StatusNoContent)
+				return
 			}
 
-			return c.Redirect(http.StatusTemporaryRedirect, redirectUrl)
+			http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect)
+			return
 		}
 
-		return next(c)
+		next(w, r)
 	}
+
+	return http.HandlerFunc(f)
 }
 
-// TODO: fixme.
-// func (m AuthMiddleware) SetJwtClaimsInContext(next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		cookie, err := c.Cookie(m.TokenCookieName)
-// 		fmt.Printf("\n\n cookie: %v, err: %v\n\n", cookie, err)
-
-// 		if err == nil && cookie != nil {
-// 			claims, err := validateAndParseJwtClaims(m.JwtSecret, cookie.Value)
-// 			if err == nil {
-// 				c.Set(jwtClaimsContextKey, claims)
-// 			}
-// 		}
-
-// 		return next(c)
-// 	}
-// }
+func IsHTMXRequest(r *http.Request) bool {
+	return r.Header.Get("HX-Request") == "true"
+}

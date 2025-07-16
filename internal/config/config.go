@@ -7,15 +7,17 @@ import (
 )
 
 const (
-	defaultServerHost       string = "0.0.0.0"
-	defaultServerPort       string = "3000"
-	defaultJwtExpiryMinutes int    = 60 * 24 // 24 hours.
-	defaultTokenCookieName  string = "auth.token"
+	defaultServerHost       string        = "0.0.0.0"
+	defaultServerPort       string        = "3000"
+	ddefaultSeverTimeout    time.Duration = time.Second * 10
+	defaultJwtExpiryMinutes int           = 60 * 24 // 24 hours.
+	defaultTokenCookieName  string        = "auth.token"
 )
 
 type serverConfig struct {
-	Host string
-	Port string
+	Host    string
+	Port    string
+	Timeout time.Duration
 }
 
 func newServerConfig() (*serverConfig, error) {
@@ -29,7 +31,7 @@ func newServerConfig() (*serverConfig, error) {
 		return nil, err
 	}
 
-	config := &serverConfig{host, port}
+	config := &serverConfig{host, port, ddefaultSeverTimeout}
 	return config, nil
 }
 

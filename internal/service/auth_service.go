@@ -13,7 +13,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -57,25 +56,24 @@ func (s *AuthService) Login(ctx context.Context, form *form.LoginForm) (*LoginRe
 	return result, nil
 }
 
-func (s AuthService) SetAuthCookies(c echo.Context, result *LoginResult) error {
+func (s AuthService) SetAuthCookies(w http.ResponseWriter, result *LoginResult) {
 	expiry := time.Now().Add(s.Config.Auth.JwtExpiryMinutes)
-	tokenCookie := &http.Cookie{
+	http.SetCookie(w, &http.Cookie{
 		Name:     s.TokenCookieName,
 		Value:    result.Token,
 		Expires:  expiry,
 		HttpOnly: true,
+		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
-	}
-	c.SetCookie(tokenCookie)
-	return nil
+	})
 }
 
-func (s AuthService) RemoveAuthCookies(c echo.Context) {
-	expiry := time.Unix(0, 0)
-	c.SetCookie(&http.Cookie{
+func (s AuthService) RemoveAuthCookies(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
 		Name:     s.TokenCookieName,
-		Expires:  expiry,
+		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
+		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 	})
 }

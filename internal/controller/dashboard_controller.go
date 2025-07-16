@@ -2,9 +2,8 @@ package controller
 
 import (
 	"log/slog"
+	"net/http"
 	"sandbox/views/pages"
-
-	"github.com/labstack/echo/v4"
 )
 
 type DashboardController struct {
@@ -17,33 +16,33 @@ func NewDashboardController(logger *slog.Logger) *DashboardController {
 	}
 }
 
-func (c *DashboardController) RegisterRoutes(e *echo.Echo) {
-	g := e.Group("/dashboard")
-	g.GET("", c.DashboardHomePage)
-	g.GET("/users", c.DashboardUsersPage)
-	g.GET("/clients", c.DashboardClientsPage)
+func (c *DashboardController) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/dashboard", c.DashboardHomePage)
+	mux.HandleFunc("/dashboard/users", c.DashboardUsersPage)
+	mux.HandleFunc("/dashboard/clients", c.DashboardClientsPage)
 }
 
-func (c DashboardController) DashboardHomePage(ctx echo.Context) error {
+func (c DashboardController) DashboardHomePage(w http.ResponseWriter, r *http.Request) {
 	html := pages.DashboardHomePage(pages.DashboardHomePageProps{
-		CurrentUrl: ctx.Path(),
+		CurrentUrl: r.URL.Path,
 	})
 
-	return render(ctx, html)
+	// TODO: handle render error.
+	html.Render(r.Context(), w)
 }
 
-func (c DashboardController) DashboardUsersPage(ctx echo.Context) error {
+func (c DashboardController) DashboardUsersPage(w http.ResponseWriter, r *http.Request) {
 	html := pages.DashboardUsersPage(pages.DashboardUsersPageProps{
-		CurrentUrl: ctx.Path(),
+		CurrentUrl: r.URL.Path,
 	})
 
-	return render(ctx, html)
+	html.Render(r.Context(), w)
 }
 
-func (c DashboardController) DashboardClientsPage(ctx echo.Context) error {
+func (c DashboardController) DashboardClientsPage(w http.ResponseWriter, r *http.Request) {
 	html := pages.DashboardClientsPage(pages.DashboardClientsPageProps{
-		CurrentUrl: ctx.Path(),
+		CurrentUrl: r.URL.Path,
 	})
 
-	return render(ctx, html)
+	html.Render(r.Context(), w)
 }
