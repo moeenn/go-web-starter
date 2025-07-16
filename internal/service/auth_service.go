@@ -40,9 +40,11 @@ func (s *AuthService) Login(ctx context.Context, form *form.LoginForm) (*LoginRe
 	}
 
 	token, expiry, err := jwt.NewExpiringToken(&jwt.ExpiringTokenArgs{
-		UserId:        user.ID.String(),
-		Email:         user.Email,
-		Role:          string(user.Role),
+		Claims: jwt.JwtClaims{
+			UserId: user.ID.String(),
+			Email:  user.Email,
+			Role:   string(user.Role),
+		},
 		JwtSecret:     s.Config.Auth.JwtSecret,
 		ExpiryMinutes: s.Config.Auth.JwtExpiryMinutes,
 	})

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"sandbox/internal/lib/jwt"
 )
 
 type AuthMiddleware struct {
@@ -19,19 +20,19 @@ func NewAuthMiddleware(cookieName string, jwtSecret []byte) *AuthMiddleware {
 func (m AuthMiddleware) LoggedIn(next http.HandlerFunc) http.HandlerFunc {
 	f := func(w http.ResponseWriter, r *http.Request) {
 		redirectUrl := "/"
-		_, err := r.Cookie(m.TokenCookieName)
+		cookie, err := r.Cookie(m.TokenCookieName)
 		if err != nil {
-			if IsHTMXRequest(r) {
-				r.Header.Set("HX-Redirect", redirectUrl)
-				w.WriteHeader(http.StatusNoContent)
-				return
-			}
-
-			http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect)
+			redirect(w, r, redirectUrl)
 			return
 		}
 
-		next(w, r)
+		ctx, err := jwt.GetClaimsContext(r.Context(), m.JwtSecret, cookie.Value)
+		if err != nil {
+			redirect(w, r, redirectUrl)
+			return
+		}
+
+		next(w, r.WithContext(ctx))
 	}
 
 	return http.HandlerFunc(f)
@@ -39,24 +40,26 @@ func (m AuthMiddleware) LoggedIn(next http.HandlerFunc) http.HandlerFunc {
 
 func (m AuthMiddleware) NotLoggedIn(next http.HandlerFunc) http.HandlerFunc {
 	f := func(w http.ResponseWriter, r *http.Request) {
-		redirectUrl := "/dashboard"
 		if _, err := r.Cookie(m.TokenCookieName); err == nil {
-			if IsHTMXRequest(r) {
-				w.Header().Set("HX-Redirect", redirectUrl)
-				w.WriteHeader(http.StatusNoContent)
-				return
-			}
-
-			http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect)
+			redirect(w, r, "/dashboard")
 			return
 		}
-
 		next(w, r)
 	}
 
 	return http.HandlerFunc(f)
 }
 
-func IsHTMXRequest(r *http.Request) bool {
+func redirect(w http.ResponseWriter, r *http.Request, redirectUrl string) {
+	if isHTMXRequest(r) {
+		w.Header().Set("HX-Redirect", redirectUrl)
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect)
+}
+
+func isHTMXRequest(r *http.Request) bool {
 	return r.Header.Get("HX-Request") == "true"
 }

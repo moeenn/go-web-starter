@@ -17,6 +17,14 @@ type AuthController struct {
 	AuthMiddleware *middleware.AuthMiddleware
 }
 
+func NewAuthController(logger *slog.Logger, authService *service.AuthService, authMiddleware *middleware.AuthMiddleware) *AuthController {
+	return &AuthController{
+		Logger:         logger,
+		AuthService:    authService,
+		AuthMiddleware: authMiddleware,
+	}
+}
+
 func (c *AuthController) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /auth/login", c.AuthMiddleware.NotLoggedIn(c.LoginPage))
 	mux.HandleFunc("POST /auth/login", c.AuthMiddleware.NotLoggedIn(c.ProcessLoginRequest))

@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 	"sandbox/internal/lib"
+	"sandbox/internal/lib/jwt"
 	"sandbox/views/pages"
 )
 
@@ -22,8 +23,9 @@ func (c *PublicController) RegisterRoutes(mux *http.ServeMux) {
 }
 
 func (c PublicController) HomePage(w http.ResponseWriter, r *http.Request) {
+	_, ok := jwt.GetJwtClaims(r)
 	html := pages.HomePage(pages.HomePageProps{
-		IsLoggedIn:     false,
+		IsLoggedIn:     ok,
 		FlashedMessage: lib.Ref("Welcome to our simple home-page"),
 	})
 
