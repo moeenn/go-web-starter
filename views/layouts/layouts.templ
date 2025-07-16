@@ -1,6 +1,6 @@
 package layouts
 
-import ()
+import "sandbox/views/icons"
 
 templ BaseLayout(title string) {
 	<!DOCTYPE html>
@@ -57,14 +57,27 @@ templ DashboardLayout(title string, currentUrl string) {
 				</div>
 				<div>
 					<button
-						class="hover:text-cyan-700 transition-colors cursor-pointer hover:font-bold bg-slate-200 rounded w-full px-3 py-2 text-sm"
+						class="hover:text-cyan-700 transition-colors cursor-pointer bg-slate-200 rounded w-full px-3 py-2 text-sm inline-flex"
 						hx-get="/auth/logout"
 						hx-target="body"
-					>Logout</button>
+					>
+						<div class="flex mx-auto">
+							<span class="my-auto">
+								@icons.Logout(icons.IconProps{Class: "h-4"})
+							</span>
+							<span class="my-auto ml-1">Logout</span>
+						</div>
+					</button>
 				</div>
 			</div>
 			<div class="col-span-4 overflow-y-auto py-4 pl-4">
 				<div class="bg-white rounded drop-shadow-md h-full border border-slate-100 p-4">
+					<div class="flex space-x-4 mb-6">
+						<button class="p-1 hover:bg-slate-200 rounded transition-colors">
+							@icons.Bars2(icons.IconProps{Class: "my-auto h-6"})
+						</button>
+						<h2 class="text-xl my-auto">{ title }</h2>
+					</div>
 					{ children... }
 				</div>
 			</div>
