@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"sandbox/internal/form"
-	"sandbox/internal/lib"
 	"sandbox/internal/lib/middleware"
 	"sandbox/internal/service"
 	"sandbox/views/components"
@@ -58,8 +57,13 @@ func (c AuthController) ProcessLoginRequest(w http.ResponseWriter, r *http.Reque
 	loginResult, err := c.AuthService.Login(r.Context(), &form)
 	if err != nil {
 		c.Logger.Error("failed to log in", "error", err.Error())
+
+		message := components.Message{
+			Message: "Invalid email or password",
+			Type:    components.MessageTypeError,
+		}
 		html := components.LoginForm(components.LoginFormProps{
-			Message: lib.Ref("Invalid email or password"),
+			Message: &message,
 			Values: components.LoginFormFields{
 				Email: form.Email,
 			},
@@ -93,8 +97,9 @@ func (c AuthController) ProcessRegisterRequest(w http.ResponseWriter, r *http.Re
 	}
 
 	if err := c.AuthService.CreateAccount(r.Context(), &form); err != nil {
+		message := components.Message{Message: err.Error(), Type: components.MessageTypeError}
 		html := components.RegisterForm(components.RegisterFormProps{
-			Message: lib.Ref(err.Error()),
+			Message: &message,
 		})
 		html.Render(r.Context(), w)
 		return
@@ -119,7 +124,10 @@ func (c AuthController) ProcessForgotPasswordRequest(w http.ResponseWriter, r *h
 		return
 	}
 
-	message := "You request has been submitted. You will receive an email shortly with instructions to reset your password"
+	message := components.Message{
+		Message: "You request has been submitted. You will receive an email shortly with instructions to reset your password",
+		Type:    components.MessageTypeSuccess,
+	}
 	html := components.ForgotPasswordForm(components.ForgotPasswordFormProps{
 		Message: &message,
 	})

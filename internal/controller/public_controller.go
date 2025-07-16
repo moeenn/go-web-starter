@@ -3,8 +3,8 @@ package controller
 import (
 	"log/slog"
 	"net/http"
-	"sandbox/internal/lib"
 	"sandbox/internal/lib/jwt"
+	"sandbox/views/components"
 	"sandbox/views/pages"
 )
 
@@ -25,8 +25,11 @@ func (c *PublicController) RegisterRoutes(mux *http.ServeMux) {
 func (c PublicController) HomePage(w http.ResponseWriter, r *http.Request) {
 	_, ok := jwt.GetJwtClaims(r)
 	html := pages.HomePage(pages.HomePageProps{
-		IsLoggedIn:     ok,
-		FlashedMessage: lib.Ref("Welcome to our simple home-page"),
+		IsLoggedIn: ok,
+		FlashedMessage: &components.Message{
+			Message: "Welcome to our simple home-page",
+			Type:    components.MessageTypeInfo,
+		},
 	})
 
 	html.Render(r.Context(), w)

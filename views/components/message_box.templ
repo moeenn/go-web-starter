@@ -1,9 +1,36 @@
 package components
 
-templ MessageBox(message string) {
-	<div class="bg-blue-100 p-3 border border-blue-200 rounded mb-6">
-		<p class="text-blue-900 text-sm leading-relaxed">
-			{ message }
+type MessageType string
+
+const (
+	MessageTypeInfo    MessageType = "info"
+	MessageTypeSuccess MessageType = "success"
+	MessageTypeError   MessageType = "error"
+)
+
+type Message struct {
+	Message string
+	Type    MessageType
+}
+
+templ MessageBox(message Message) {
+	<div
+		class={
+			templ.KV("border-blue-200 bg-blue-100", message.Type == MessageTypeInfo),
+			templ.KV("border-green-200 bg-green-100", message.Type == MessageTypeSuccess),
+			templ.KV("border-red-200 bg-red-100", message.Type == MessageTypeError),
+			"p-3 border rounded mb-6",
+		}
+	>
+		<p
+			class={
+				templ.KV("text-blue-900", message.Type == MessageTypeInfo),
+				templ.KV("text-green-900", message.Type == MessageTypeSuccess),
+				templ.KV("text-red-900", message.Type == MessageTypeError),
+				"text-sm leading-relaxed",
+			}
+		>
+			{ message.Message }
 		</p>
 	</div>
 }
