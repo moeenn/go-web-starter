@@ -29,7 +29,7 @@ func (c DashboardController) DashboardHomePage(ctx echo.Context) error {
 		CurrentUrl: ctx.Path(),
 	})
 
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }
 
 func (c DashboardController) DashboardUsersPage(ctx echo.Context) error {
@@ -37,7 +37,7 @@ func (c DashboardController) DashboardUsersPage(ctx echo.Context) error {
 		CurrentUrl: ctx.Path(),
 	})
 
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }
 
 func (c DashboardController) DashboardClientsPage(ctx echo.Context) error {
@@ -45,5 +45,5 @@ func (c DashboardController) DashboardClientsPage(ctx echo.Context) error {
 		CurrentUrl: ctx.Path(),
 	})
 
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }

@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"sandbox/internal/form"
 	"sandbox/internal/lib"
+	"sandbox/internal/lib/htmx"
+	customMiddleware "sandbox/internal/lib/middleware"
 	"sandbox/internal/service"
 	"sandbox/views/components"
 	"sandbox/views/pages"
-
-	customMiddleware "sandbox/internal/lib/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,7 +22,6 @@ type AuthController struct {
 
 func (c *AuthController) RegisterRoutes(e *echo.Echo) {
 	g := e.Group("/auth")
-
 	g.GET("/login", c.AuthMiddleware.NotLoggedIn(c.LoginPage))
 	g.POST("/login", c.AuthMiddleware.NotLoggedIn(c.ProcessLoginRequest))
 	g.GET("/register", c.AuthMiddleware.NotLoggedIn(c.RegisterPage))
@@ -30,19 +29,11 @@ func (c *AuthController) RegisterRoutes(e *echo.Echo) {
 	g.GET("/forgot-password", c.AuthMiddleware.NotLoggedIn(c.ForgotPasswordPage))
 	g.POST("/forgot-password", c.AuthMiddleware.NotLoggedIn(c.ProcessForgotPasswordRequest))
 	g.GET("/logout", c.AuthMiddleware.LoggedIn(c.ProcessLogoutRequest))
-
-	// g.GET("/login", c.LoginPage)
-	// g.POST("/login", c.ProcessLoginRequest)
-	// g.GET("/register", c.RegisterPage)
-	// g.POST("/register", c.ProcessRegisterRequest)
-	// g.GET("/forgot-password", c.ForgotPasswordPage)
-	// g.POST("/forgot-password", c.ProcessForgotPasswordRequest)
-	// g.GET("/logout", c.ProcessLogoutRequest)
 }
 
 func (c AuthController) LoginPage(ctx echo.Context) error {
 	html := pages.LoginPage(&pages.LoginPageProps{})
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }
 
 func (c AuthController) ProcessLoginRequest(ctx echo.Context) error {
@@ -55,7 +46,7 @@ func (c AuthController) ProcessLoginRequest(ctx echo.Context) error {
 				Password: form.Password,
 			},
 		})
-		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+		return render(ctx, html)
 	}
 
 	loginResult, err := c.AuthService.Login(ctx.Request().Context(), &form)
@@ -67,7 +58,7 @@ func (c AuthController) ProcessLoginRequest(ctx echo.Context) error {
 				Email: form.Email,
 			},
 		})
-		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+		return render(ctx, html)
 	}
 
 	if err := c.AuthService.SetAuthCookies(ctx, loginResult); err != nil {
@@ -75,16 +66,15 @@ func (c AuthController) ProcessLoginRequest(ctx echo.Context) error {
 		html := components.LoginForm(components.LoginFormProps{
 			Message: lib.Ref("Something went wrong. Please try again."),
 		})
-		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+		return render(ctx, html)
 	}
 
-	ctx.Response().Header().Set("HX-Location", "/dashboard")
-	return ctx.String(http.StatusOK, "")
+	return htmx.Redirect(ctx, "/dashboard")
 }
 
 func (c AuthController) RegisterPage(ctx echo.Context) error {
 	html := pages.RegisterPage()
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }
 
 func (c AuthController) ProcessRegisterRequest(ctx echo.Context) error {
@@ -96,14 +86,14 @@ func (c AuthController) ProcessRegisterRequest(ctx echo.Context) error {
 				Email: form.Email,
 			},
 		})
-		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+		return render(ctx, html)
 	}
 
 	if err := c.AuthService.CreateAccount(ctx.Request().Context(), &form); err != nil {
 		html := components.RegisterForm(components.RegisterFormProps{
 			Message: lib.Ref(err.Error()),
 		})
-		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+		return render(ctx, html)
 	}
 
 	ctx.Response().Header().Set("HX-Location", "/auth/login")
@@ -112,7 +102,7 @@ func (c AuthController) ProcessRegisterRequest(ctx echo.Context) error {
 
 func (c AuthController) ForgotPasswordPage(ctx echo.Context) error {
 	html := pages.ForgotPasswordPage(pages.ForgotPasswordPageProps{})
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }
 
 func (c AuthController) ProcessForgotPasswordRequest(ctx echo.Context) error {
@@ -121,18 +111,17 @@ func (c AuthController) ProcessForgotPasswordRequest(ctx echo.Context) error {
 		html := components.ForgotPasswordForm(components.ForgotPasswordFormProps{
 			Errors: err,
 		})
-		return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+		return render(ctx, html)
 	}
 
 	message := "You request has been submitted. You will receive an email shortly with instructions to reset your password"
 	html := components.ForgotPasswordForm(components.ForgotPasswordFormProps{
 		Message: &message,
 	})
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }
 
 func (c AuthController) ProcessLogoutRequest(ctx echo.Context) error {
 	c.AuthService.RemoveAuthCookies(ctx)
-	ctx.Response().Header().Set("HX-Location", "/")
-	return ctx.NoContent(http.StatusNoContent)
+	return htmx.Redirect(ctx, "/")
 }

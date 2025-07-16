@@ -4,13 +4,11 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	dbmodels "sandbox/db/models"
 	"sandbox/internal/config"
 	"sandbox/internal/controller"
-	"sandbox/internal/service"
-
-	dbmodels "sandbox/db/models"
-
 	customMiddleware "sandbox/internal/lib/middleware"
+	"sandbox/internal/service"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
@@ -40,7 +38,10 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		Config:          globalConfig,
 	}
 
-	authMiddleware := customMiddleware.NewAuthMiddleware(globalConfig.Auth.TokenCookieName)
+	authMiddleware := customMiddleware.NewAuthMiddleware(
+		globalConfig.Auth.TokenCookieName,
+		globalConfig.Auth.JwtSecret,
+	)
 
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())

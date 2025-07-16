@@ -28,5 +28,5 @@ func (c PublicController) HomePage(ctx echo.Context) error {
 		FlashedMessage: lib.Ref("Welcome to our simple home-page"),
 	})
 
-	return html.Render(ctx.Request().Context(), ctx.Response().Writer)
+	return render(ctx, html)
 }

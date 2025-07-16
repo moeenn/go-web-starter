@@ -59,7 +59,6 @@ func (s *AuthService) Login(ctx context.Context, form *form.LoginForm) (*LoginRe
 
 func (s AuthService) SetAuthCookies(c echo.Context, result *LoginResult) error {
 	expiry := time.Now().Add(s.Config.Auth.JwtExpiryMinutes)
-
 	tokenCookie := &http.Cookie{
 		Name:     s.TokenCookieName,
 		Value:    result.Token,
@@ -68,22 +67,6 @@ func (s AuthService) SetAuthCookies(c echo.Context, result *LoginResult) error {
 		SameSite: http.SameSiteStrictMode,
 	}
 	c.SetCookie(tokenCookie)
-
-	// TODO: enable.
-	// userJson, err := json.Marshal(result.User)
-	// if err != nil {
-	// 	s.Logger.Error("failed to json encode login result for auth user cookie", "error", err.Error())
-	// 	return errors.New("failed to set auth cookies")
-	// }
-
-	// encodedUser := base64.StdEncoding.EncodeToString(userJson)
-	// userCookie := &http.Cookie{
-	// 	Name:    authUserCookieName,
-	// 	Value:   encodedUser,
-	// 	Expires: expiry,
-	// }
-	// c.SetCookie(userCookie)
-
 	return nil
 }
 
@@ -95,8 +78,6 @@ func (s AuthService) RemoveAuthCookies(c echo.Context) {
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	})
-
-	// c.SetCookie(&http.Cookie{Name: authUserCookieName, Expires: expiry}) // TODO: enable.
 }
 
 func (s AuthService) CreateAccount(ctx context.Context, form *form.RegisterForm) error {
