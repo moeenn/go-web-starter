@@ -36,7 +36,7 @@ lint:
 	golangci-lint run ./...
 
 
-build: gen_css gen_views gen_models
+build: gen_css gen_views
 	go build -o app ${ENTRYPOINT}
 
 
@@ -57,10 +57,6 @@ clean:
 .PHONY: gen_token
 gen_token:
 	go run github.com/moeenn/go-token@latest
-
-
-gen_models:
-	sqlc generate
 
 
 migration_new:

@@ -2,14 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-	"sandbox/db"
 	"sandbox/internal/config"
 	"sandbox/internal/controller"
 	"sandbox/internal/lib/middleware"
+	"sandbox/internal/repo"
 	"sandbox/internal/service"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 func run(ctx context.Context, logger *slog.Logger) error {
@@ -19,16 +23,22 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	}
 
 	// connect to database.
-	dbConn, models, err := db.Connect(ctx, globalConfig.Database.Uri)
+	db, err := sqlx.Open("postgres", globalConfig.Database.Uri)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open database connection: %w", err)
 	}
-	defer dbConn.Close(ctx)
+	defer db.Close()
+
+	if err := db.PingContext(ctx); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	userRepo := repo.NewUserRepo(db)
 
 	authService := &service.AuthService{
 		TokenCookieName: globalConfig.Auth.TokenCookieName,
 		Logger:          logger,
-		DB:              models,
+		UserRepo:        userRepo,
 		Config:          globalConfig,
 	}
 

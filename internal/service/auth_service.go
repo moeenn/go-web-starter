@@ -5,21 +5,21 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"sandbox/db/models"
 	"sandbox/internal/config"
 	"sandbox/internal/form"
 	"sandbox/internal/lib/jwt"
+	"sandbox/internal/models"
+	"sandbox/internal/repo"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
 	TokenCookieName string
 	Logger          *slog.Logger
-	DB              *models.Queries
+	UserRepo        *repo.UserRepo
 	Config          *config.Config
 }
 
@@ -30,7 +30,7 @@ type LoginResult struct {
 }
 
 func (s *AuthService) Login(ctx context.Context, form *form.LoginForm) (*LoginResult, error) {
-	user, err := s.DB.GetUserByEmail(ctx, form.Email)
+	user, err := s.UserRepo.FindUserByEmail(ctx, form.Email)
 	if err != nil {
 		return nil, errors.New("invalid email or password")
 	}
@@ -41,7 +41,7 @@ func (s *AuthService) Login(ctx context.Context, form *form.LoginForm) (*LoginRe
 
 	token, expiry, err := jwt.NewExpiringToken(&jwt.ExpiringTokenArgs{
 		Claims: jwt.JwtClaims{
-			UserId: user.ID.String(),
+			UserId: user.Id.String(),
 			Email:  user.Email,
 			Role:   string(user.Role),
 		},
@@ -50,7 +50,7 @@ func (s *AuthService) Login(ctx context.Context, form *form.LoginForm) (*LoginRe
 	})
 
 	result := &LoginResult{
-		User:   &user,
+		User:   user,
 		Token:  token,
 		Expiry: expiry,
 	}
@@ -87,16 +87,14 @@ func (s AuthService) CreateAccount(ctx context.Context, form *form.RegisterForm)
 		return errors.New("failed to register user")
 	}
 
-	err = s.DB.CreateUser(ctx, models.CreateUserParams{
-		ID:       uuid.New(),
+	err = s.UserRepo.CreateUser(ctx, &models.User{
+		Id:       uuid.New(),
 		Email:    form.Email,
-		Role:     models.UserRoleADMIN,
+		Role:     models.UserRoleAdmin,
 		Password: string(passwordHash),
-		Name:     pgtype.Text{Valid: false},
 	})
 
 	if err != nil {
-		// TODO: handle email_unique constraint.
 		s.Logger.Error("failed to save user to database", "error", err.Error())
 		return errors.New("failed to register user")
 	}
