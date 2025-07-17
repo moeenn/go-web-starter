@@ -33,8 +33,23 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	userRepo := repo.NewUserRepo(db)
+	// create server multiplexer.
+	mux := http.NewServeMux()
+	fs := http.FileServer(http.Dir("./public"))
+	mux.Handle("/public/", http.StripPrefix("/public", fs))
 
+	// -------------------------------------------------------------------------
+	//
+	// initialize repos.
+	//
+	// -------------------------------------------------------------------------
+	userRepo := repo.NewUserRepo(db, logger)
+
+	// -------------------------------------------------------------------------
+	//
+	// initialize services.
+	//
+	// -------------------------------------------------------------------------
 	authService := &service.AuthService{
 		TokenCookieName: globalConfig.Auth.TokenCookieName,
 		Logger:          logger,
@@ -42,23 +57,30 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		Config:          globalConfig,
 	}
 
+	// -------------------------------------------------------------------------
+	//
+	// initialize middleware.
+	//
+	// -------------------------------------------------------------------------
 	authMiddleware := middleware.NewAuthMiddleware(
 		globalConfig.Auth.TokenCookieName,
 		globalConfig.Auth.JwtSecret,
 	)
 
-	mux := http.NewServeMux()
-
-	// serve public assets.
-	fs := http.FileServer(http.Dir("./public"))
-	mux.Handle("/public/", http.StripPrefix("/public", fs))
-
-	// register all controllers.
+	// -------------------------------------------------------------------------
+	//
+	// register controllers.
+	//
+	// -------------------------------------------------------------------------
 	controller.NewPublicController(logger).RegisterRoutes(mux)
 	controller.NewAuthController(logger, authService, authMiddleware).RegisterRoutes(mux)
-	controller.NewDashboardController(logger, authMiddleware).RegisterRoutes(mux)
+	controller.NewDashboardController(logger, authMiddleware, userRepo).RegisterRoutes(mux)
 
-	// start the web server.
+	// -------------------------------------------------------------------------
+	//
+	// start web server.
+	//
+	// -------------------------------------------------------------------------
 	address := globalConfig.Server.Address()
 	logger.Info("starting server", "address", address)
 	handler := middleware.Logger(logger, authMiddleware.SetClaimsContext(mux))

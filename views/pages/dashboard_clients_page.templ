@@ -1,13 +1,51 @@
 package pages
 
-import "sandbox/views/layouts"
+import (
+	"sandbox/internal/models"
+	c "sandbox/views/components"
+	"sandbox/views/layouts"
+)
+
+type ClientsTableProps struct {
+	Limit      int
+	Offset     int
+	TotalCount int
+	Url        string
+	Clients    []*models.User
+}
+
+templ ClientsTable(props *ClientsTableProps) {
+	@c.Table(len(props.Clients) == 0, props.Url, props.Limit, props.Offset, props.TotalCount) {
+		@c.THead([]string{"ID", "Email", "Name"})
+		@c.TBody() {
+			for _, client := range props.Clients {
+				@c.TRow() {
+					@c.TData() {
+						{ client.Id.String() }
+					}
+					@c.TData() {
+						{ client.Email }
+					}
+					@c.TData() {
+						if client.Name.Valid {
+							{ client.Name.String }
+						} else {
+							{ "-" }
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 type DashboardClientsPageProps struct {
 	CurrentUrl string
+	TableData  *ClientsTableProps
 }
 
 templ DashboardClientsPage(props DashboardClientsPageProps) {
 	@layouts.DashboardLayout("Clients", props.CurrentUrl) {
-		<h1>Content of the dashboard clients page</h1>
+		@ClientsTable(props.TableData)
 	}
 }

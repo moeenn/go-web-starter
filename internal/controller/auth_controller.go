@@ -105,7 +105,7 @@ func (c AuthController) ProcessRegisterRequest(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	w.Header().Set("HX-Redirect", "/dashboard")
+	w.Header().Set("HX-Redirect", "/auth/login")
 	w.WriteHeader(http.StatusNoContent)
 }
 

@@ -1,7 +1,6 @@
 package pages
 
 import "sandbox/views/layouts"
-import "sandbox/views/icons"
 
 type DashboardUsersPageProps struct {
 	CurrentUrl string
@@ -9,64 +8,6 @@ type DashboardUsersPageProps struct {
 
 templ DashboardUsersPage(props DashboardUsersPageProps) {
 	@layouts.DashboardLayout("Users", props.CurrentUrl) {
-		<div class="border border-slate-200 overflow-auto rounded">
-			<table class="w-full">
-				<thead class="bg-slate-200 bg-opacity-80 rounded-t text-slate-600">
-					<tr>
-						<th class="text-xs font-medium text-left font-medium py-2 px-2">Id</th>
-						<th class="text-xs font-medium text-left font-medium py-2 px-2">Email</th>
-						<th class="text-xs font-medium text-left font-medium py-2 px-2">Name</th>
-						<th class="text-xs font-medium text-left font-medium py-2 px-2">Role</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr class="hover:bg-gray-50 cursor-pointer border-y border-slate-100">
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">123</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">admin@site.com</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">Admin</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">ADMIN</td>
-					</tr>
-					<tr class="hover:bg-gray-50 cursor-pointer border-y border-slate-100">
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">123</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">admin@site.com</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">Admin</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">ADMIN</td>
-					</tr>
-					<tr class="hover:bg-gray-50 cursor-pointer border-y border-slate-100">
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">123</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">admin@site.com</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">Admin</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">ADMIN</td>
-					</tr>
-					<tr class="hover:bg-gray-50 cursor-pointer border-y border-slate-100">
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">123</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">admin@site.com</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">Admin</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">ADMIN</td>
-					</tr>
-					<tr class="hover:bg-gray-50 cursor-pointer border-y border-slate-100">
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">123</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">admin@site.com</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">Admin</td>
-						<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">ADMIN</td>
-					</tr>
-				</tbody>
-			</table>
-			// <div class="hover:bg-white hover:bg-opacity-5 flex py-16">
-			// 	<span class="text-xs text-zinc-700 mx-auto">
-			// 		No records found
-			// 	</span>
-			// </div>
-			<div class="bg-slate-200 bg-opacity-80 rounded-b text-slate-600 flex">
-				<div class="ml-auto inline-flex">
-					<button class="hover:enabled:bg-slate-300 text-xs p-2 disabled:text-slate-400" disabled>
-						@icons.ChevronLeft(icons.IconProps{Class: "h-4"})
-					</button>
-					<button class="hover:enabled:bg-slate-300 rounded-br text-xs p-2">
-						@icons.ChevronRight(icons.IconProps{Class: "h-4"})
-					</button>
-				</div>
-			</div>
-		</div>
+		<h1>Welcome to the users page</h1>
 	}
 }

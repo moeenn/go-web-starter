@@ -1,0 +1,99 @@
+package components
+
+import (
+	"fmt"
+	"sandbox/views/icons"
+)
+
+templ Table(nowRows bool, url string, limit, offset, totalCount int) {
+	<div class="border border-slate-200 overflow-auto rounded">
+		<table class="w-full">
+			{ children... }
+		</table>
+		if nowRows {
+			@tableNoRows()
+		}
+		@tablePagination(url, limit, offset, totalCount)
+	</div>
+}
+
+templ THead(columns []string) {
+	<thead class="bg-slate-200 bg-opacity-80 rounded-t text-slate-600">
+		<tr>
+			for _, col := range columns {
+				<th class="text-xs font-medium text-left font-medium py-2 px-2">{ col }</th>
+			}
+		</tr>
+	</thead>
+}
+
+templ TBody() {
+	<tbody>
+		{ children... }
+	</tbody>
+}
+
+templ TRow() {
+	<tr class="hover:bg-gray-50 cursor-pointer border-y border-slate-100">
+		{ children... }
+	</tr>
+}
+
+templ TData() {
+	<td class="px-2 py-3 whitespace-nowrap text-sm text-zinc-700">
+		{ children... }
+	</td>
+}
+
+templ tableNoRows() {
+	<div class="hover:bg-white hover:bg-opacity-5 flex py-16">
+		<span class="text-xs text-zinc-700 mx-auto">
+			No records found
+		</span>
+	</div>
+}
+
+templ tablePagination(url string, limit, offset, totalCount int) {
+	{{
+		backDisabled := false
+		if offset == 0 {
+			backDisabled = true
+		}
+
+		forwardDisabled := false
+		if (limit + offset) >= totalCount {
+			forwardDisabled = true
+		}
+
+		page := (offset / limit) + 1
+		backAction := fmt.Sprintf("%s?limit=%d&offset=%d", url, limit, offset-limit)
+		forwardAction := fmt.Sprintf("%s?limit=%d&offset=%d", url, limit, offset+limit)
+	}}
+	<div class="bg-slate-200 bg-opacity-80 rounded-b text-slate-600 flex">
+		<div class="ml-auto inline-flex">
+			<button
+				hx-get={ backAction }
+				hx-target="body"
+				hx-swap="innerHTML"
+				class="hover:enabled:bg-slate-300 text-xs p-2 text-slate-900 disabled:text-slate-400"
+				if backDisabled {
+					{ "disabled" }
+				}
+			>
+				@icons.ChevronLeft(icons.IconProps{Class: "h-4"})
+			</button>
+			<span class="text-xs py-2 px-4 bg-slate-100">{ page }</span>
+			<button
+				hx-get={ forwardAction }
+				hx-target="body"
+				hx-swap="innerHTML"
+				class="hover:enabled:bg-slate-300 rounded-br text-xs p-2 text-slate-900 disabled:text-slate-400"
+				if forwardDisabled {
+					{ "disabled" }
+				}
+			>
+				@icons.ChevronRight(icons.IconProps{Class: "h-4"})
+			</button>
+		</div>
+	</div>
+}

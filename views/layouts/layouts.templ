@@ -9,6 +9,7 @@ templ BaseLayout(title string) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<link rel="stylesheet" href="/public/css/styles.css"/>
+			<link rel="icon" type="image/x-icon" href="/public/images/favicon.png"/>
 			<script src="/public/js/htmx.min.js"></script>
 			<script type="module" src="/public/js/spa-nav.js"></script>
 			<title>{ title }</title>
@@ -71,14 +72,16 @@ templ DashboardLayout(title string, currentUrl string) {
 				</div>
 			</div>
 			<div class="col-span-4 overflow-y-auto py-4 pl-4">
-				<div class="bg-white rounded drop-shadow-md h-full border border-slate-100 p-4">
-					<div class="flex space-x-4 mb-6">
+				<div class="bg-white rounded drop-shadow-md h-full border border-slate-100 p-4 flex flex-col">
+					<div class="flex space-x-4 mb-4">
 						<button class="p-1 hover:bg-slate-200 rounded transition-colors">
 							@icons.Bars2(icons.IconProps{Class: "my-auto h-6"})
 						</button>
 						<h2 class="text-xl my-auto">{ title }</h2>
 					</div>
-					{ children... }
+					<div class="flex-1 overflow-y-auto">
+						{ children... }
+					</div>
 				</div>
 			</div>
 		</div>

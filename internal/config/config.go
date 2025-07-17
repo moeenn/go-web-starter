@@ -10,7 +10,7 @@ const (
 	defaultServerHost       string        = "0.0.0.0"
 	defaultServerPort       string        = "3000"
 	ddefaultSeverTimeout    time.Duration = time.Second * 10
-	defaultJwtExpiryMinutes int           = 60 * 24 // 24 hours.
+	defaultJwtExpiryMinutes int           = 60
 	defaultTokenCookieName  string        = "auth.token"
 )
 

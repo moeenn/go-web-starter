@@ -26,8 +26,6 @@ type User struct {
 	DeletedAt sql.NullTime   `db:"deleted_at"`
 }
 
-type ConstraintsUser string
-
 const (
-	ConstraintsUserEmailUnique ConstraintsUser = "email_unique"
+	ConstraintsUserEmailUnique string = "email_unique"
 )
