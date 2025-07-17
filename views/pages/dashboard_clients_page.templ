@@ -3,6 +3,7 @@ package pages
 import (
 	"app/internal/models"
 	c "app/views/components"
+	"app/views/icons"
 	"app/views/layouts"
 )
 
@@ -16,7 +17,7 @@ type ClientsTableProps struct {
 
 templ ClientsTable(props *ClientsTableProps) {
 	@c.Table(len(props.Clients) == 0, props.Url, props.Limit, props.Offset, props.TotalCount) {
-		@c.THead([]string{"ID", "Email", "Name"})
+		@c.THead([]string{"ID", "Email", "Name", "Updated at", ""})
 		@c.TBody() {
 			for _, client := range props.Clients {
 				@c.TRow() {
@@ -32,6 +33,14 @@ templ ClientsTable(props *ClientsTableProps) {
 						} else {
 							{ "-" }
 						}
+					}
+					@c.TData() {
+						{ client.UpdatedAt.Format("02/01/2006") }
+					}
+					@c.TData() {
+						<a href={ props.Url + "/" + client.Id.String() + "/edit" } label="Edit">
+							@icons.Edit(icons.Props{Class: "h-3"})
+						</a>
 					}
 				}
 			}

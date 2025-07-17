@@ -80,7 +80,7 @@ templ tablePagination(url string, limit, offset, totalCount int) {
 					{ "disabled" }
 				}
 			>
-				@icons.ChevronLeft(icons.IconProps{Class: "h-4"})
+				@icons.ChevronLeft(icons.Props{Class: "h-4"})
 			</button>
 			<span class="text-xs py-2 px-4 bg-slate-100">{ page }</span>
 			<button
@@ -92,7 +92,7 @@ templ tablePagination(url string, limit, offset, totalCount int) {
 					{ "disabled" }
 				}
 			>
-				@icons.ChevronRight(icons.IconProps{Class: "h-4"})
+				@icons.ChevronRight(icons.Props{Class: "h-4"})
 			</button>
 		</div>
 	</div>

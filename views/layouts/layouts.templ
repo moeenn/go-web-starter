@@ -11,6 +11,7 @@ templ BaseLayout(title string) {
 			<link rel="stylesheet" href="/public/css/styles.css"/>
 			<link rel="icon" type="image/x-icon" href="/public/images/favicon.png"/>
 			<script src="/public/js/htmx.min.js"></script>
+			<script src="/public/js/dashboard_sidebar.js"></script>
 			<script type="module" src="/public/js/spa-nav.js"></script>
 			<title>{ title }</title>
 		</head>
@@ -45,8 +46,8 @@ templ SidebarEntry(name, link, currentLink string) {
 
 templ DashboardLayout(title string, currentUrl string) {
 	@BaseLayout("Dashboard - " + title) {
-		<div class="h-screen w-screen overflow-hidden grid grid-cols-5 px-4">
-			<div class="bg-slate-50 py-4 flex flex-col">
+		<div class="h-screen w-screen overflow-hidden flex px-4">
+			<div data-sidebar class="bg-slate-50 py-4 flex flex-col min-w-60 mr-4">
 				<div class="p-4">
 					<a class="text-3xl mb-0" href="/dashboard">
 						Logo
@@ -58,24 +59,24 @@ templ DashboardLayout(title string, currentUrl string) {
 				</div>
 				<div>
 					<button
-						class="hover:text-cyan-700 transition-colors cursor-pointer bg-slate-200 rounded w-full px-3 py-2 text-sm inline-flex"
+						class="text-cyan-700 hover:bg-slate-300 transition-colors cursor-pointer bg-slate-200 rounded w-full px-3 py-2 text-sm inline-flex"
 						hx-get="/auth/logout"
 						hx-target="body"
 					>
 						<div class="flex mx-auto">
 							<span class="my-auto">
-								@icons.Logout(icons.IconProps{Class: "h-4"})
+								@icons.Logout(icons.Props{Class: "h-4"})
 							</span>
 							<span class="my-auto ml-1">Logout</span>
 						</div>
 					</button>
 				</div>
 			</div>
-			<div class="col-span-4 overflow-y-auto py-4 pl-4">
-				<div class="bg-white rounded drop-shadow-md h-full border border-slate-100 p-4 flex flex-col">
+			<div class="py-4 flex-1">
+				<div class="bg-white rounded drop-shadow-md h-full border border-slate-100 p-6 flex flex-col">
 					<div class="flex space-x-4 mb-4">
-						<button class="p-1 hover:bg-slate-200 rounded transition-colors">
-							@icons.Bars2(icons.IconProps{Class: "my-auto h-6"})
+						<button data-sidebar-toggle class="p-1 hover:bg-slate-200 rounded transition-colors">
+							@icons.Bars2(icons.Props{Class: "my-auto h-6"})
 						</button>
 						<h2 class="text-xl my-auto">{ title }</h2>
 					</div>
