@@ -1,15 +1,15 @@
 package service
 
 import (
+	"app/internal/config"
+	"app/internal/form"
+	"app/internal/lib/jwt"
+	"app/internal/models"
+	"app/internal/repo"
 	"context"
 	"errors"
 	"log/slog"
 	"net/http"
-	"sandbox/internal/config"
-	"sandbox/internal/form"
-	"sandbox/internal/lib/jwt"
-	"sandbox/internal/models"
-	"sandbox/internal/repo"
 	"time"
 
 	"github.com/google/uuid"

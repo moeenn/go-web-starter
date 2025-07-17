@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"app/internal/lib/jwt"
 	"net/http"
-	"sandbox/internal/lib/jwt"
 )
 
 type AuthMiddleware struct {

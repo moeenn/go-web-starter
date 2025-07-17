@@ -1,12 +1,12 @@
 package controller
 
 import (
+	"app/internal/lib/middleware"
+	"app/internal/models"
+	"app/internal/repo"
+	"app/views/pages"
 	"log/slog"
 	"net/http"
-	"sandbox/internal/lib/middleware"
-	"sandbox/internal/models"
-	"sandbox/internal/repo"
-	"sandbox/views/pages"
 	"strconv"
 )
 

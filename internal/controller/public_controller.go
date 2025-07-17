@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"app/internal/lib/jwt"
+	"app/views/components"
+	"app/views/pages"
 	"log/slog"
 	"net/http"
-	"sandbox/internal/lib/jwt"
-	"sandbox/views/components"
-	"sandbox/views/pages"
 )
 
 type PublicController struct {

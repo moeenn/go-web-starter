@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	"app/internal/lib/jwt"
 	"context"
 	"net/http"
-	"sandbox/internal/lib/jwt"
 )
 
 func (m AuthMiddleware) SetClaimsContext(next http.Handler) http.Handler {

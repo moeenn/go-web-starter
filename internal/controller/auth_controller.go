@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"app/internal/form"
+	"app/internal/lib/middleware"
+	"app/internal/service"
+	"app/views/components"
+	"app/views/pages"
 	"log/slog"
 	"net/http"
-	"sandbox/internal/form"
-	"sandbox/internal/lib/middleware"
-	"sandbox/internal/service"
-	"sandbox/views/components"
-	"sandbox/views/pages"
 )
 
 type AuthController struct {

@@ -1,16 +1,16 @@
 package main
 
 import (
+	"app/internal/config"
+	"app/internal/controller"
+	"app/internal/lib/middleware"
+	"app/internal/repo"
+	"app/internal/service"
 	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-	"sandbox/internal/config"
-	"sandbox/internal/controller"
-	"sandbox/internal/lib/middleware"
-	"sandbox/internal/repo"
-	"sandbox/internal/service"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

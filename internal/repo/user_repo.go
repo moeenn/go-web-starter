@@ -1,9 +1,9 @@
 package repo
 
 import (
+	"app/internal/models"
 	"context"
 	"errors"
-	"sandbox/internal/models"
 
 	"log/slog"
 

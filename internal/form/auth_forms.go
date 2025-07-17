@@ -1,8 +1,8 @@
 package form
 
 import (
+	"app/views/components"
 	"net/http"
-	"sandbox/views/components"
 	"strings"
 )
 

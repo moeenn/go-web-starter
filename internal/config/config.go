@@ -1,8 +1,8 @@
 package config
 
 import (
+	"app/internal/lib"
 	"fmt"
-	"sandbox/internal/lib"
 	"time"
 )
 
